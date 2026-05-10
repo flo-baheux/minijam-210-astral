@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 namespace Laywelin {
-  public class InteractionListener : MonoBehaviour {
+  public class InteractListener : MonoBehaviour {
     [SerializeField] private Interactable interactable;
     
     [SerializeField] private UnityEvent editorOnInteractionReceived;

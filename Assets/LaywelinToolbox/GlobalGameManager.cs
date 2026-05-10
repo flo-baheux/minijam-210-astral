@@ -2,6 +2,7 @@ using System;
 using DG.Tweening;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Laywelin {
 
@@ -14,20 +15,27 @@ namespace Laywelin {
   public class GlobalGameManager : MonoBehaviour {
     public static GlobalGameManager Instance { get; private set; }
 
-    [SerializeField] private InputHandler inputHandler;
+    [SerializeField] private InputHandler _inputHandler;
+    public InputHandler InputHandler => _inputHandler;
+
+    public readonly PlayerInventory PlayerInventory = new();
+    [SerializeField] private PlayerSanity playerSanity;
+    public PlayerSanity PlayerSanity => playerSanity;
     
     public event Action<GameplayMode, GameplayMode> OnGameplayModeChanged;
-
+    public event Action OnGamePaused, OnGameResumed;
+    
     private bool isGamePaused;
+    private GameplayMode previousGameplayMode = GameplayMode.LOOK_AROUND;
     private GameplayMode _currentGameplayMode = GameplayMode.LOOK_AROUND;
     public GameplayMode CurrentGameplayMode {
       get => _currentGameplayMode;
       private set {
         if (_currentGameplayMode == value)
           return;
-        var previousAction = _currentGameplayMode;
+        previousGameplayMode = _currentGameplayMode;
         _currentGameplayMode = value;
-        OnGameplayModeChanged?.Invoke(previousAction, _currentGameplayMode);
+        OnGameplayModeChanged?.Invoke(previousGameplayMode, _currentGameplayMode);
       }
     }
     
@@ -42,7 +50,16 @@ namespace Laywelin {
 
       FramerateVSyncSetup();
       DOTweenSetup();
-      OnGameplayModeChanged += OnGameplayModeChangedHandler;
+      GameplayEventManager.AddListener<InteractedWithDocumentEvent>(InteractedWithDocumentHandler);
+      GameplayEventManager.AddListener<ClosedDocumentEvent>(ClosedDocumentHandler);
+    }
+
+    private void InteractedWithDocumentHandler(InteractedWithDocumentEvent evt) {
+      ChangeGameplayMode(GameplayMode.DOCUMENT);
+    }
+
+    private void ClosedDocumentHandler(ClosedDocumentEvent evt) { 
+      ChangeGameplayMode(previousGameplayMode);
     }
 
     private void Start() { 
@@ -66,33 +83,37 @@ namespace Laywelin {
     }
 
     private void Update() {
-      if (inputHandler.WasPausePressed())
-        PauseResumeGame();
-    }
-
-    private void OnGameplayModeChangedHandler(GameplayMode previousAction, GameplayMode currentAction) {
-
+      if (InputHandler.WasPausePressed())
+        PauseGame();
+      
+      if (isGamePaused && InputHandler.WasUICancelPressed())
+        ResumeGame();
     }
     
-    public void PauseResumeGame() {
-      isGamePaused = !isGamePaused;
-      Time.timeScale = isGamePaused ? 0: 1;
-      if (isGamePaused)
-          inputHandler.SwitchContext(InputContext.UI);
-      else
-        SetInputHandlerFromGameplayMode();
+    public void PauseGame() {
+      isGamePaused = true;
+      Time.timeScale = 0;
+      InputHandler.SwitchContext(InputContext.UI);
+      OnGamePaused?.Invoke();
+    }
+
+    public void ResumeGame() {
+      isGamePaused = false;
+      Time.timeScale = 1;
+      SetInputHandlerFromGameplayMode();
+      OnGameResumed?.Invoke();
     }
 
     public void SetInputHandlerFromGameplayMode() {
       switch (CurrentGameplayMode) {
         case GameplayMode.LOOK_AROUND:
-          inputHandler.SwitchContext(InputContext.GAMEPLAY);
+          InputHandler.SwitchContext(InputContext.GAMEPLAY);
           break;
         case GameplayMode.DOCUMENT:
-          inputHandler.SwitchContext(InputContext.DOCUMENT);
+          InputHandler.SwitchContext(InputContext.DOCUMENT);
           break;
         case GameplayMode.INTERACT_UI:
-          inputHandler.SwitchContext(InputContext.UI);
+          InputHandler.SwitchContext(InputContext.UI);
           break;
       }
     }

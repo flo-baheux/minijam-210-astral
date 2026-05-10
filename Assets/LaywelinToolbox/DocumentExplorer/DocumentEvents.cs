@@ -3,7 +3,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace Laywelin {
-  public class InteractedWithDocument: GameplayEvent {
+  public class InteractedWithDocumentEvent: GameplayEvent {
     public DocumentScriptableObject document;
   }
+
+  public class ClosedDocumentEvent : GameplayEvent {}
 }

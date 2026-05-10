@@ -7,36 +7,36 @@ public class PlayerInteraction : MonoBehaviour {
   [SerializeField] private InputHandler inputHandler;
   [SerializeField] private Transform cameraTransform;
   
-  private RaycastHit[] raycastHits = new RaycastHit[1];
-  
   public Action<bool> OnCanInteractStateChange;
 
-  private Interactable _interactable;
-  public bool CanInteract => _interactable != null;
-  private Interactable CurrentInteractable {
-    get => _interactable;
+  private Interactable interactable;
+
+  private bool _canInteract;
+  public bool CanInteract {
+    get => _canInteract;
     set {
-      bool couldInteractBefore = CanInteract;
-      _interactable = value;
-      
-      
-      if (CanInteract != couldInteractBefore)
-        OnCanInteractStateChange?.Invoke(CanInteract);
+      bool prevCanInteract = _canInteract;
+      _canInteract = value;
+      if (_canInteract != prevCanInteract)
+        OnCanInteractStateChange?.Invoke(_canInteract);
     }
   }
 
   private void Update() {
     DetectInteractable();
     if (CanInteract && inputHandler.WasGameplayInteractPressed())
-      CurrentInteractable?.Interact();
+      interactable?.Interact();
   }
 
   private void DetectInteractable() {
-    int hits = Physics.RaycastNonAlloc(cameraTransform.position, cameraTransform.forward, raycastHits, maxInteractionDistance);
-    Debug.DrawRay(cameraTransform.position, cameraTransform.forward * maxInteractionDistance, Color.red, 1);
-    if (hits > 0 && raycastHits[0].collider.TryGetComponent(out Interactable interactable))
-      CurrentInteractable = interactable;
-    else
-      CurrentInteractable = null;
+    if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out RaycastHit hit, maxInteractionDistance)
+        && hit.collider.TryGetComponent(out interactable)
+        && interactable.CanInteract)
+      CanInteract = true;
+    else {
+      CanInteract = false;
+      interactable = null;
+    }
+
   }
 }

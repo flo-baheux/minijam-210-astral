@@ -27,7 +27,6 @@ namespace Laywelin {
       Cursor.visible = false;
 
       gameInputActions = new();
-      gameInputActions.Global.Enable();
     }
 
     public void SwitchContext(InputContext context) {
@@ -41,9 +40,6 @@ namespace Laywelin {
       switch (inputContext) {
         case InputContext.GAMEPLAY:
           gameInputActions.Gameplay.Enable();
-
-          Cursor.lockState = CursorLockMode.Locked;
-          Cursor.visible = false;
           break;
 
         case InputContext.UI:
@@ -52,24 +48,36 @@ namespace Laywelin {
           
         case InputContext.DOCUMENT:
           gameInputActions.Document.Enable();
-
-          Cursor.lockState = CursorLockMode.None;
-          Cursor.visible = true;
           break;
         
         case InputContext.CUTSCENE:
           break;
       }
+
+      ApplyCursorState();
     }
 
-    // GLOBAL
-    
-    public bool WasPausePressed() {
-      return gameInputActions.Global.Pause.WasPressedThisFrame();
+    private void ApplyCursorState() {
+      switch (inputContext) {
+        case InputContext.GAMEPLAY:
+        case InputContext.CUTSCENE:
+          Cursor.lockState = CursorLockMode.Locked;
+          Cursor.visible = false;
+          break;
+
+        case InputContext.UI:
+        case InputContext.DOCUMENT:
+          Cursor.lockState = CursorLockMode.None;
+          Cursor.visible = true;
+          break;
+      }
     }
-    
+
     // GAMEPLAY
-    
+
+    public bool WasPausePressed() {
+      return inputContext == InputContext.GAMEPLAY && gameInputActions.Gameplay.Pause.WasPressedThisFrame();
+    }
     public Vector2 GetMovementInput() {
       if (inputContext != InputContext.GAMEPLAY || !CanProcessGameplayInput())
         return Vector2.zero;
@@ -118,15 +126,15 @@ namespace Laywelin {
     // DOCUMENT
 
     public bool WasDocumentPreviousPressed() {
-      return CanProcessUIInput() && gameInputActions.Document.Previous.WasPressedThisFrame();
+      return CanProcessDocumentInput() && gameInputActions.Document.Previous.WasPressedThisFrame();
     }
 
     public bool WasDocumentNextPressed() {
-      return CanProcessUIInput() && gameInputActions.Document.Next.WasPressedThisFrame();
+      return CanProcessDocumentInput() && gameInputActions.Document.Next.WasPressedThisFrame();
     }
 
     public bool WasDocumentCancelPressed() {
-      return CanProcessUIInput() && gameInputActions.Document.Cancel.WasPressedThisFrame();
+      return CanProcessDocumentInput() && gameInputActions.Document.Cancel.WasPressedThisFrame();
     }
 
     // "CAN PROCESS" HELPERS
@@ -141,6 +149,10 @@ namespace Laywelin {
 
     public bool CanProcessDocumentInput() {
       return Application.isFocused && inputContext == InputContext.DOCUMENT;
+    }
+
+    private void OnDestroy() {
+      gameInputActions.Dispose();
     }
   }
 }
