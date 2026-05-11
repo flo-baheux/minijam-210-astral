@@ -38,6 +38,7 @@ public class Chest : Interactable {
 
   private void OpenChest() {
     audioSource.PlayOneShot(openDoorAudio);
+        collider.enabled = false;
     
     DOTween.Sequence()
       .Append(LockFramePivot.DOLocalRotate(new(0, 0, -70f), 1f).SetRelative(true))

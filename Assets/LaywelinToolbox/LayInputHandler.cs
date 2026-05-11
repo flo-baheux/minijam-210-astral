@@ -29,6 +29,10 @@ namespace Laywelin {
       gameInputActions = new();
     }
 
+    private void Start() { 
+      InputSystem.onActionChange += OnActionChange;
+    }
+
     public void SwitchContext(InputContext context) {
       inputContext = context;
 
@@ -156,6 +160,38 @@ namespace Laywelin {
 
     public void OnSensibilityChangedHandler(float value) {
       lookSensitivity = value;
+    }
+
+
+    private InputDevice lastDevice;
+    public Action OnSwitchDevice;
+
+    private void OnActionChange(object obj, InputActionChange change) {
+      if (change == InputActionChange.ActionPerformed) {
+        var action = obj as InputAction;
+        if (action == null || action.activeControl == null)
+          return;
+
+        var device = action.activeControl.device;
+
+        if (device == lastDevice)
+          return;
+
+        bool wasGamepad = lastDevice is Gamepad;
+        bool isGamepad = device is Gamepad;
+
+        lastDevice = device;
+        if (wasGamepad == isGamepad)
+          return;
+
+        OnSwitchDevice?.Invoke();
+
+        lookSensitivity = isGamepad ? 1.5f : 0.15f;
+      }
+    }
+
+    public bool IsUsingGamepad() {
+      return lastDevice is Gamepad;
     }
   }
 }

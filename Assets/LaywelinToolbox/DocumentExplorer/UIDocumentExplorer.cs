@@ -76,7 +76,6 @@ namespace Laywelin {
       if (documentData.reduceSanityOnRead && firstTimeReading)
         GlobalGameManager.Instance.PlayerSanity.ReduceSanity();
 
-      Debug.Log($"Reading doc - {documentData.notificationOnRead.Length} / {documentData.notifOnlyFirstTime} - {firstTimeReading}");
       if (documentData.notificationOnRead.Length > 0)
         if (!documentData.notifOnlyFirstTime || firstTimeReading)
           GameplayEventManager.Emit(new NotificationEvent() { notificationText = documentData.notificationOnRead });

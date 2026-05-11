@@ -6,13 +6,16 @@ using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class Lock3 : Interactable {
   [SerializeField] private TextMeshProUGUI v1Text, v2Text, v3Text;
   [SerializeField] private CinemachineCamera lockCamera;
   [SerializeField] private int code1, code2, code3;
   [SerializeField] private List<GameObject> inputControls;
-  
+  [SerializeField] private GameObject controlsDisplay;
+  [SerializeField] private Button firstButtonSelected;
   private int v1, v2, v3;
 
   private bool interactingWith = false;
@@ -32,7 +35,9 @@ public class Lock3 : Interactable {
 
   public override void Interact() {
     base.Interact();
+    firstButtonSelected.Select();
     interactingWith = true;
+    controlsDisplay.SetActive(true);
     GlobalGameManager.Instance.ChangeGameplayMode(GameplayMode.INTERACT_UI);
     lockCamera.Priority.Value = 100;
     inputControls.ForEach(x => x.SetActive(true));
@@ -42,9 +47,16 @@ public class Lock3 : Interactable {
     if (interactingWith == false)
       return;
 
+    if (EventSystem.current.currentSelectedGameObject == null && GlobalGameManager.Instance.InputHandler.GetUINavigation() != Vector2.zero) {
+      firstButtonSelected.Select();
+    }
+
     if (GlobalGameManager.Instance.InputHandler.WasUICancelPressed()) {
+      EventSystem.current.SetSelectedGameObject(null);
       interactingWith = false;
       lockCamera.Priority.Value = 0;
+    controlsDisplay.SetActive(false);
+      
       GlobalGameManager.Instance.ChangeGameplayMode(GameplayMode.LOOK_AROUND);
     }
   }
@@ -82,6 +94,9 @@ public class Lock3 : Interactable {
       lockCamera.Priority.Value = 0;
       GlobalGameManager.Instance.ChangeGameplayMode(GameplayMode.LOOK_AROUND);
       canInteract = false;
+      EventSystem.current.SetSelectedGameObject(null);
+    controlsDisplay.SetActive(false);
+      
       inputControls.ForEach(x => x.SetActive(false));
       
       Destroy(gameObject, 1);
