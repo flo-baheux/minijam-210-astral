@@ -13,6 +13,8 @@ public class Ingame3DButton : Interactable {
   [SerializeField] private Transform buttonMovingPart;
   [SerializeField] private int value = 0;
 
+  [SerializeField] private AudioSource audioSource;
+  
   public int Value => value;
   private Sequence pressButtonSequence;
   
@@ -30,6 +32,8 @@ public class Ingame3DButton : Interactable {
     value = Math.Clamp((value + 1) % 10, 0, 9);
     vText.text = value.ToString();
 
+    audioSource.PlayOneShot(audioSource.clip);
+    
     pressButtonSequence.Restart();
   }
 }

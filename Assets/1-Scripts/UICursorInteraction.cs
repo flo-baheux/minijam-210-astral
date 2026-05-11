@@ -34,7 +34,7 @@ public class UICursorInteraction : MonoBehaviour {
     float targetScale = canInteract ? canInteractScale : cannotInteractScale;
 
     tween = DOTween.Sequence()
-      .Join(cursorIcon.DOColor(targetColor, 1f))
-      .Join(cursorIcon.rectTransform.DOScale(targetScale, 1f));
+      .Join(cursorIcon.DOColor(targetColor, 0.5f))
+      .Join(cursorIcon.rectTransform.DOScale(targetScale, 0.5f));
   }
 }

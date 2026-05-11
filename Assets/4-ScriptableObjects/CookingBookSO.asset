@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fcc3f78a8cd477789f0918a0bdaba1d, type: 3}
   m_Name: CookingBookSO
   m_EditorClassIdentifier: Assembly-CSharp::Laywelin.DocumentScriptableObject
-  isDoublePageDocument: 0
-  documentImages:
-  - {fileID: 21300000, guid: 3d1ca35aee6323740a73c6b2547913aa, type: 3}
-  - {fileID: 21300000, guid: 17b76790191d2114b8c9e5e6a9d7420d, type: 3}
-  - {fileID: 21300000, guid: 146ea30dd19c61b408ec933f837b7f5b, type: 3}
-  sanityThreshold: 0
-  insaneDocumentImages: []
+  listDocumentDataBySanityLevel:
+  - sanityThreshold: 5
+    listSprites:
+    - {fileID: 21300000, guid: 3d1ca35aee6323740a73c6b2547913aa, type: 3}
+    - {fileID: 21300000, guid: 17b76790191d2114b8c9e5e6a9d7420d, type: 3}
+    - {fileID: 21300000, guid: 146ea30dd19c61b408ec933f837b7f5b, type: 3}
+    notificationOnRead: 
+    notifOnlyFirstTime: 0
+    reduceSanityOnRead: 0

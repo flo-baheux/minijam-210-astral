@@ -9,14 +9,11 @@ public class DocumentIngameDisplayer : MonoBehaviour {
 
   private void Start() {
     GlobalGameManager.Instance.PlayerSanity.OnSanityReduced += OnSanityReducedHandler;
-    image.sprite = GlobalGameManager.Instance.PlayerSanity.currentSanity <= documentSO.sanityThreshold
-      ? documentSO.insaneDocumentImages[0]
-      : documentSO.documentImages[0];
+
+    image.sprite = documentSO.GetDataBySanityLevel().listSprites[0];
   }
 
   private void OnSanityReducedHandler(int newValue) {
-    image.sprite = GlobalGameManager.Instance.PlayerSanity.currentSanity <= documentSO.sanityThreshold
-      ? documentSO.insaneDocumentImages[0]
-      : documentSO.documentImages[0];
+    image.sprite = documentSO.GetDataBySanityLevel().listSprites[0];
   }
 }

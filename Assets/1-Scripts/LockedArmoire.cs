@@ -8,6 +8,8 @@ public class LockedArmoire : Interactable {
   [SerializeField] private Collider collider;
   [SerializeField] private bool IsLocked = true;
   [SerializeField] private InventoryItemSO requiredKey;
+  [SerializeField] private AudioSource audioSource;
+  [SerializeField] private AudioClip lockedDoorAudio, openDoorAudio;
 
   private void Awake() {
     collider.enabled = true;
@@ -25,6 +27,8 @@ public class LockedArmoire : Interactable {
       GameplayEventManager.Emit(new LockedNeedItemEvent() { itemNeededName = requiredKey.itemName });
       pivotL.DOShakeRotation(1f, new Vector3(0, 1, 0), 10, 12, false, ShakeRandomnessMode.Harmonic);
       pivotR.DOShakeRotation(1f, new Vector3(0, 1, 0), 10, 12, false, ShakeRandomnessMode.Harmonic);
+      audioSource.PlayOneShot(lockedDoorAudio);
+      
       return;
     }
 
@@ -33,8 +37,9 @@ public class LockedArmoire : Interactable {
     pivotR.DOLocalRotate(new(0, -70f, 0), 0.4f);
       
     GlobalGameManager.Instance.PlayerSanity.ReduceSanity();
+    GameplayEventManager.Emit(new NotificationEvent() { notificationText = "He was... obsessing over something?" });
     
-    // FIXME: Camera movement?
+    audioSource.PlayOneShot(openDoorAudio);
     
     collider.enabled = false;
   }

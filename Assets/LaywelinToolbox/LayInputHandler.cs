@@ -36,7 +36,6 @@ namespace Laywelin {
       gameInputActions.UI.Disable();
       gameInputActions.Document.Disable();
 
-      Debug.Log($"Input context: {inputContext}");
       switch (inputContext) {
         case InputContext.GAMEPLAY:
           gameInputActions.Gameplay.Enable();
@@ -153,6 +152,10 @@ namespace Laywelin {
 
     private void OnDestroy() {
       gameInputActions.Dispose();
+    }
+
+    public void OnSensibilityChangedHandler(float value) {
+      lookSensitivity = value;
     }
   }
 }

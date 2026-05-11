@@ -1,12 +1,6 @@
 using System;
-using System.Collections.Generic;
 using DG.Tweening;
 using Laywelin;
-using TMPro;
-using Unity.Cinemachine;
-using UnityEngine;
-using UnityEngine.Events;
-using Random = System.Random;
 
 public class IngameBookInteractable : Interactable {
   public bool active = false;

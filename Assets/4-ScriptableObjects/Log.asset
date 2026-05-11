@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcc3f78a8cd477789f0918a0bdaba1d, type: 3}
+  m_Name: Log
+  m_EditorClassIdentifier: Assembly-CSharp::Laywelin.DocumentScriptableObject
+  listDocumentDataBySanityLevel:
+  - sanityThreshold: 5
+    listSprites:
+    - {fileID: 21300000, guid: 045ab0f67c7f82943929b92b52ece33e, type: 3}
+    - {fileID: 21300000, guid: 01312ac57b431c54692f1107a4fd46ff, type: 3}
+    - {fileID: 21300000, guid: 88a9675e250e6bd44b42cffeeb0755a3, type: 3}
+    - {fileID: 21300000, guid: 0cb7cef7acb7d4440a01d00b7938db6d, type: 3}
+    - {fileID: 21300000, guid: 5665946007cf93142a47b76565ee0924, type: 3}
+    notificationOnRead: 
+    notifOnlyFirstTime: 0
+    reduceSanityOnRead: 0

@@ -15,8 +15,10 @@ namespace Laywelin {
     public void ReduceSanity() {
       int sanityBefore = currentSanity;
       currentSanity = Math.Clamp(currentSanity - 1, 0, maxSanity);
-      if (currentSanity != sanityBefore)
+      if (currentSanity != sanityBefore) {
+        AudioManager.Instance.PlayEerieSound();
         OnSanityReduced?.Invoke(currentSanity);
+      }
     }
   }
 }

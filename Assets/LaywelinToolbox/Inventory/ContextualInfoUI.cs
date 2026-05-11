@@ -33,7 +33,7 @@ public class ContextualInfoUI: MonoBehaviour {
       DOTween.Kill(this);
       DOTween.Sequence().SetId(this)
         .Append(canvasGroup.DOFade(1, 0.4f).From(0))
-        .AppendInterval(sanityText.text.Split(" ").Length * 0.2f + 0.5f)
+        .AppendInterval(sanityText.text.Split(" ").Length * 0.2f + 2f)
         .Append(canvasGroup.DOFade(0, 0.4f));
     }
 

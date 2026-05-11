@@ -606,6 +606,17 @@
                 },
                 {
                     "name": "",
+                    "id": "4e39bb6f-df6f-4936-9f37-31a90acd02f8",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "c52c8e0b-8179-41d3-b8a1-d149033bbe86",
                     "path": "<Mouse>/position",
                     "interactions": "",
@@ -817,6 +828,17 @@
                 },
                 {
                     "name": "",
+                    "id": "a50fb079-ad17-4e37-bd50-0e3454d838ed",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Previous",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "d20c993d-c8be-4602-a8c8-589356983f4c",
                     "path": "<Keyboard>/d",
                     "interactions": "",
@@ -833,6 +855,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
+                    "action": "Next",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "567e4b21-3b1f-4055-a4b8-c5013f43a34a",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
                     "action": "Next",
                     "isComposite": false,
                     "isPartOfComposite": false

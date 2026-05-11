@@ -7,7 +7,9 @@ public class Chest : Interactable {
   [SerializeField] private Transform topChestPivot, LockFramePivot;
   [SerializeField] private Collider collider;
   [SerializeField] private bool IsLocked = true;
-  
+  [SerializeField] private AudioSource audioSource;
+  [SerializeField] private AudioClip lockedDoorAudio, openDoorAudio;
+
   private void Awake() {
     GetComponent<Collider>().enabled = true;
   }
@@ -21,6 +23,8 @@ public class Chest : Interactable {
     if (IsLocked) {
       topChestPivot.DOShakeRotation(1f, new Vector3(0, 0, 1), 10, 12, false, ShakeRandomnessMode.Harmonic);
       GameplayEventManager.Emit(new LockedNeedItemEvent());
+      audioSource.PlayOneShot(lockedDoorAudio);
+      
     } else
       OpenChest();
   }
@@ -33,6 +37,8 @@ public class Chest : Interactable {
   }
 
   private void OpenChest() {
+    audioSource.PlayOneShot(openDoorAudio);
+    
     DOTween.Sequence()
       .Append(LockFramePivot.DOLocalRotate(new(0, 0, -70f), 1f).SetRelative(true))
       .Insert(0.7f, topChestPivot.DOLocalRotate(new (0, 0, -65f), 1f).SetRelative(true))

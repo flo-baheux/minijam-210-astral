@@ -7,6 +7,8 @@ public class LockedDoor : Interactable {
   [SerializeField] private Transform doorPivot;
   [SerializeField] private Collider collider;
   [SerializeField] private InventoryItemSO requiredKey;
+  [SerializeField] private AudioSource audioSource;
+  [SerializeField] private AudioClip lockedDoorAudio, openDoorAudio;
   
   private void Awake() {
     collider.enabled = true;
@@ -22,11 +24,15 @@ public class LockedDoor : Interactable {
     if (!GlobalGameManager.Instance.PlayerInventory.ContainsItem(requiredKey)) {
       GameplayEventManager.Emit(new LockedNeedItemEvent(){ itemNeededName = requiredKey.itemName });
       doorPivot.DOShakeRotation(1f, new Vector3(0, 1, 0), 10, 12, false, ShakeRandomnessMode.Harmonic);
+      audioSource.PlayOneShot(lockedDoorAudio);
+      
       return;
     }
     
     GlobalGameManager.Instance.PlayerInventory.RemoveItem(requiredKey);
     doorPivot.DOLocalRotate(new(0, 95f, 0), 0.4f);
     collider.enabled = false;
+
+    audioSource.PlayOneShot(openDoorAudio);
   }
 }

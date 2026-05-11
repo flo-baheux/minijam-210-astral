@@ -7,6 +7,7 @@ namespace Laywelin {
     public override void Interact() {
       base.Interact();
       GlobalGameManager.Instance.PlayerInventory.AddItem(inventoryItem);
+      AudioManager.Instance.PlayPickupSound();
       canInteract = false;
       Destroy(gameObject);
     }

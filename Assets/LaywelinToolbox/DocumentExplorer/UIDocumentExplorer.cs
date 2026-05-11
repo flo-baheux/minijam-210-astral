@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace Laywelin {
@@ -11,12 +10,18 @@ namespace Laywelin {
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private Image documentImage;
     [SerializeField] private AudioClip pageChangeSound;
+    [SerializeField] private GameObject nbPagesObject;
+    [SerializeField] private TextMeshProUGUI nbPageIndicatorText;
     
     private List<Sprite> loadedDocumentImages;
     private int currentIndex;
+
+    private HashSet<SanityDocumentData> alreadyReadDocData = new();
     
     private void Awake() {
       canvasGroup.Toggle(false);
+      nbPagesObject.SetActive(false);
+      
       GameplayEventManager.AddListener<InteractedWithDocumentEvent>(InteractedWithDocumentHandler);
     }
 
@@ -49,19 +54,33 @@ namespace Laywelin {
         Debug.LogError("Cannot show document: null");
         return;
       }
+      
+      nbPagesObject.SetActive(false);
 
-      loadedDocumentImages = (GlobalGameManager.Instance.PlayerSanity.currentSanity <= document.sanityThreshold 
-        ? document.insaneDocumentImages 
-        : document.documentImages).ToList();
+      var documentData = document.GetDataBySanityLevel();
+      loadedDocumentImages = documentData.listSprites;
       if (loadedDocumentImages.Count == 0) {
         Debug.LogError("Cannot show document: empty");
         return;
       }
-      
+
       currentIndex = Math.Clamp(index, 0, loadedDocumentImages.Count - 1);
+
+      RefreshPrevNextIndicator();
+      
       documentImage.sprite = loadedDocumentImages[currentIndex];
       canvasGroup.Toggle(true);
       AudioManager.Instance.PlayOnceSFX(pageChangeSound);
+
+      bool firstTimeReading = alreadyReadDocData.Add(documentData);
+      if (documentData.reduceSanityOnRead && firstTimeReading)
+        GlobalGameManager.Instance.PlayerSanity.ReduceSanity();
+
+      Debug.Log($"Reading doc - {documentData.notificationOnRead.Length} / {documentData.notifOnlyFirstTime} - {firstTimeReading}");
+      if (documentData.notificationOnRead.Length > 0)
+        if (!documentData.notifOnlyFirstTime || firstTimeReading)
+          GameplayEventManager.Emit(new NotificationEvent() { notificationText = documentData.notificationOnRead });
+
     }
 
     public void HideDocument() {
@@ -69,6 +88,7 @@ namespace Laywelin {
       canvasGroup.Toggle(false);
       currentIndex = 0;
       documentImage.sprite = null;
+      nbPagesObject.SetActive(false);
       AudioManager.Instance.PlayOnceSFX(pageChangeSound);
       GameplayEventManager.Emit(new ClosedDocumentEvent());
     }
@@ -80,9 +100,12 @@ namespace Laywelin {
       int previousIndex = currentIndex;
 
       currentIndex = Math.Clamp(currentIndex + 1, 0, loadedDocumentImages.Count - 1);
+
+      RefreshPrevNextIndicator();
+      
       if (previousIndex == currentIndex)
         return;
-
+      
       documentImage.sprite = loadedDocumentImages[currentIndex];
       AudioManager.Instance.PlayOnceSFX(pageChangeSound);
     }
@@ -93,11 +116,21 @@ namespace Laywelin {
 
       int previousIndex = currentIndex;
       currentIndex = Math.Clamp(currentIndex - 1, 0, loadedDocumentImages.Count - 1);
-      if (previousIndex == currentIndex)
+
+      RefreshPrevNextIndicator();
+
+      if (previousIndex == currentIndex) {
+        HideDocument();
         return;
+      }
 
       documentImage.sprite = loadedDocumentImages[currentIndex];
       AudioManager.Instance.PlayOnceSFX(pageChangeSound);
+    }
+
+    private void RefreshPrevNextIndicator() {
+      nbPageIndicatorText.text = $"{currentIndex + 1} / {loadedDocumentImages.Count}";
+      nbPagesObject.SetActive(loadedDocumentImages.Count > 1);
     }
   }
 }

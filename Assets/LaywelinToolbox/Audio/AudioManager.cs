@@ -15,7 +15,8 @@ namespace Laywelin {
     
     [SerializeField] private AudioClip mainBGM;
 
-    [SerializeField] private AudioClip buttonClickSound, switchOnSound, switchOffSound, openPanelSound, closePanelSound, defaultErrorSound;
+    [SerializeField] private AudioClip buttonClickSound, switchOnSound, switchOffSound, openPanelSound, closePanelSound, 
+      defaultErrorSound, pickupSound, eerieSound;
     
     public static AudioManager Instance { get; private set; }
 
@@ -47,6 +48,14 @@ namespace Laywelin {
 
     public void PlayErrorSound() {
       PlayOnceSFX(defaultErrorSound);
+    }
+
+    public void PlayPickupSound() {
+      PlayOnceSFX(pickupSound);
+    }
+
+    public void PlayEerieSound() { 
+      PlayOnceSFX(eerieSound);
     }
 
     public void PlayOnceRandomSFX(List<AudioClip> clips, AudioSource source = null) {

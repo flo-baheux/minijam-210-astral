@@ -14,14 +14,14 @@ public class TelescopeController : Interactable {
 
   [SerializeField] private CinemachineCamera camera;
   [SerializeField] private Image img, fadeToBlackImg;
-  [SerializeField] private CanvasGroup canvasGroup;
+  [SerializeField] private CanvasGroup canvasGroup, thanksForPlayingCanvas;
   [SerializeField] private string coordConstellations, coordInsaneEnding;
   [SerializeField] private InventoryItemSO requiredItemEnding;
   [SerializeField] private Sprite constellationsSprite, endingSprite;
   
   private bool interactingWith = false;
 
-  private bool sanityReducedConstellations = false;
+  private bool sanityReducedConstellations = false, lockAllEnding = false;
   private void Awake() {
     canvasGroup.Toggle(false);
   }
@@ -40,16 +40,33 @@ public class TelescopeController : Interactable {
     if (coords == coordConstellations) {
       img.sprite = constellationsSprite;
       img.color = Color.white;
-      DOVirtual.DelayedCall(1f, () => { 
-        GameplayEventManager.Emit(new NotificationEvent() { notificationText = $"Oh, constellations! But..?" });
-      });
+
+      DOVirtual.DelayedCall(1f,
+        () => { GameplayEventManager.Emit(new NotificationEvent() { notificationText = $"Oh my... He's right, stars are missing!?" }); });
       if (!sanityReducedConstellations) {
         GlobalGameManager.Instance.PlayerSanity.ReduceSanity();
         sanityReducedConstellations = true;
+
       }
-    } else if (coords == coordInsaneEnding && GlobalGameManager.Instance.PlayerInventory.ContainsItem(requiredItemEnding)) {
-      img.sprite = endingSprite;
-      img.color = Color.white;
+    } else if (coords == coordInsaneEnding) {
+      if (GlobalGameManager.Instance.PlayerInventory.ContainsItem(requiredItemEnding)) {
+        lockAllEnding = true;
+        img.sprite = endingSprite;
+        img.color = Color.white;
+        DOVirtual.DelayedCall(1f,
+          () => { GameplayEventManager.Emit(new NotificationEvent() { notificationText = $"He was right... Eric will eat us all! We are doomed!" }); });
+
+        DOVirtual.DelayedCall(3.5f, 
+          () => fadeToBlackImg.DOFade(1, 2f)
+            .OnComplete(() => thanksForPlayingCanvas.DOFade(1, 1f)));
+
+      } else {
+        img.sprite = null;
+        img.color = Color.clear;
+        DOVirtual.DelayedCall(1f,
+          () => { GameplayEventManager.Emit(new NotificationEvent() { notificationText = $"I need something to see what he found." }); });
+      }
+
     } else {
       img.sprite = null;
       img.color = Color.clear;
@@ -61,6 +78,9 @@ public class TelescopeController : Interactable {
 
   private void Update() {
     if (interactingWith == false)
+      return;
+
+    if (lockAllEnding)
       return;
 
     if (GlobalGameManager.Instance.InputHandler.WasUICancelPressed()) {

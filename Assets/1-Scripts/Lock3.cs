@@ -50,21 +50,22 @@ public class Lock3 : Interactable {
   }
 
   public void ChangeValue1(bool increase) {
-    v1 += SanitizeValue(increase ? 1 : -1);
-    v1 %= 10;
+    int delta = increase ? 1 : -1;
+    v1 = (v1 + delta + 10) % 10;
     v1Text.text = v1.ToString();
     CheckCompleted();
   }
 
   public void ChangeValue2(bool increase) {
-    v2 += SanitizeValue(increase ? 1 : -1);
-    v2 %= 10;
+    int delta = increase ? 1 : -1;
+    v2 = (v2 + delta + 10) % 10;
     v2Text.text = v2.ToString();
     CheckCompleted();
   }
 
   public void ChangeValue3(bool increase) {
-    v3 += SanitizeValue(increase ? 1 : -1);
+    int delta = increase ? 1 : -1;
+    v3 = (v3 + delta + 10) % 10;
     v3Text.text = v3.ToString();
     CheckCompleted();
   }
